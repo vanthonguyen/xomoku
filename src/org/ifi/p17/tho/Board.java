@@ -28,6 +28,7 @@ public class Board extends JFrame implements ActionListener{
 	private static int DIMENSION_Y = 600;	
 	private static String LABEL_PLAY = "Play";
 	private static String LABEL_AUTOMATIC = "Automatic";
+	private static String LABEL_NEWGAME = "New Game";
 	private static Color X_COLOR = Color.blue;
 	private static Color Y_COLOR = Color.red;
 	private static Color[] COLORS = new Color[] {Color.black, X_COLOR, Y_COLOR, Color.green};
@@ -42,6 +43,7 @@ public class Board extends JFrame implements ActionListener{
 	private JPanel eastPanel;
 	private JButton buttonPlay;
 	private JButton buttonAutomatic;
+	private JButton buttonNewGame;
 	
 	private JLabel labelMovePosition = new JLabel(LABEL_MOVE_POSITION);
 	private JLabel labelMovePositionValue = new JLabel();
@@ -135,6 +137,7 @@ public class Board extends JFrame implements ActionListener{
 		//JPanel panelButton = new JPanel();
 		buttonAutomatic = new JButton(LABEL_AUTOMATIC);
 		buttonPlay = new JButton(LABEL_PLAY);
+		buttonNewGame = new JButton(LABEL_NEWGAME);
 		//panelButton.add(buttonPlay);
 		//panelButton.add(buttonAutomatic);
 		//labelDebug = new JLabel();
@@ -155,6 +158,7 @@ public class Board extends JFrame implements ActionListener{
                 
 		eastPanel.add(buttonPlay, contraints2);
 		eastPanel.add(buttonAutomatic, contraints1);
+		eastPanel.add(buttonNewGame, contraints1);
 		eastPanel.add(labelMovePosition, contraints2);
 		eastPanel.add(labelMovePositionValue, contraints1);
 		eastPanel.add(labelMoveTime, contraints2);
@@ -164,6 +168,7 @@ public class Board extends JFrame implements ActionListener{
 		
 		buttonPlay.addActionListener(this);
 		buttonAutomatic.addActionListener(this);
+		buttonNewGame.addActionListener(this);
 	}
 
 	public void updateBoard(){
@@ -249,7 +254,27 @@ public class Board extends JFrame implements ActionListener{
         	playButtonPressed();
         }else if(LABEL_AUTOMATIC.equals(command)){
         	automaticButtonPressed();
+        }else if(LABEL_NEWGAME.equals(command)){
+        	newGameButtonPressed();
         }
+        
+	}
+	
+	private void newGameButtonPressed(){
+		int state[][] = gameState.getState();
+		for (int row = 0; row < gameState.rows; row++){
+			for (int col = 0; col < gameState.cols; col++){
+				JButton panel = (JButton) gomokuBoard.getComponent(row * GameState.BOARD_SIZE + col);
+				//panel.setForeground(COLORS[gameState.at(row, col)]);
+				//panel.setFont(new Font(panel.getFont().getName(), Font.BOLD, 16));		
+				panel.setText("");
+				gameState.set(row, col, GameState.NO_PLAYER);
+			}
+		}
+		GameStateFile.updateFile(gameState.getState());
+		gomokuBoard.updateUI();
+		buttonPlay.setEnabled(true);
+		buttonAutomatic.setEnabled(true);
 	}
 	
 	private void setLabelValues(int row, int col, long t, int count){

@@ -26,6 +26,127 @@ public class AIPlayer extends Player {
 		bestMove = new MoveValue(Integer.MIN_VALUE, -1, -1);
 		gameState = gs;
 	}
+	
+/*	
+	public Move getBestMove() {
+		// logger.debug("begin search
+		// ---------------------------------------------------------");
+		// logger.debug("Initiale state:");
+		// logger.debug("\n" + board.toString());
+		int vl;
+		if (player == Piece.WHITE) {
+			vl = max(board, Integer.MIN_VALUE, Integer.MAX_VALUE, maxDepth);
+		} else {
+			vl = min(board, Integer.MIN_VALUE, Integer.MAX_VALUE, maxDepth);
+		}
+		if (vl < -18000) {
+			bestMove = null;
+		}
+		System.out.println(bestMove.toString() + "value:" + vl);
+		return bestMove;
+	}
+
+	private int max(Board b, int alpha, int beta, int depth) {
+		if (depth == 0) {
+			return Evaluator.evaluate(b);
+		}
+
+		b.setWhiteToMove(true);
+		MoveList moves = MoveGenerator.generate(b);
+		for (Move move : moves) {
+			Board newBoard = b.applyMove(move);
+			int value = min(newBoard, alpha, beta, depth - 1);
+			if (value > alpha) {
+				alpha = value;
+				if (player == Piece.WHITE && depth == maxDepth && !newBoard.isChecked(player)) {
+					bestMove = move;
+				}
+			}
+			// board
+
+			if (alpha >= beta) {
+				return beta;
+			}
+		}
+		return alpha;
+	}
+
+	private int min(Board b, int alpha, int beta, int depth) {
+		if (depth == 0) {
+			return Evaluator.evaluate(b);
+		}
+
+		b.setWhiteToMove(false);
+		MoveList moves = MoveGenerator.generate(b);
+		for (Move move : moves) {
+			Board newBoard = b.applyMove(move);
+			int value = max(newBoard, alpha, beta, depth - 1);
+			if (value < beta) {
+				beta = value;
+				if (player == Piece.BLACK && depth == maxDepth && !newBoard.isChecked(player)) {
+					bestMove = move;
+				}
+			}
+			// board
+			if (alpha >= beta) {
+				return alpha;
+			}
+		}
+		return beta;
+	}
+
+	/**
+	 * maxPlayer is white player
+	 * 
+	 * @param alpha
+	 * @param beta
+	 * @param depth
+	 * @param activePlayer
+	 * @return
+	 */
+/*	
+	public int minimax(Board b, int alpha, int beta, int depth, byte player) {
+		// Move bestMove = new Move((byte)-1,(byte)-1);
+		if (depth == 0) {
+			return Evaluator.evaluate(b);
+		}
+		MoveList moves = MoveGenerator.generate(b);
+		if (b.getCurrentPlayer() == Piece.WHITE) {
+			for (Move move : moves) {
+				Board newBoard = b.applyMove(move);
+
+				int value = minimax(newBoard, alpha, beta, depth - 1, Piece.BLACK);
+				// undo move
+				if (value > alpha) {
+					alpha = value;
+					bestMove = move;
+					System.out.println(b.getCurrentPlayer());
+					System.out.println(move.toString());
+				}
+				// board
+				if (alpha > beta) {
+					break;
+				}
+			}
+			return alpha;
+		} else {
+			for (Move move : moves) {
+				Board newBoard = b.applyMove(move);
+				int value = minimax(newBoard, alpha, beta, depth - 1, Piece.WHITE);
+
+				if (value < beta) {
+					beta = value;
+					// bestMove = move;
+				}
+				// board
+				if (alpha > beta) {
+					break;
+				}
+			}
+			return beta;
+		}
+	}
+*/	
 	public MoveValue getBestMove(GameState gs, int alpha, int beta, int depth, int player){
 		return maxValue(gs, alpha, beta, depth, player);
 	}
