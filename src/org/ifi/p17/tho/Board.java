@@ -128,7 +128,7 @@ public class Board extends JFrame implements ActionListener{
 						int row = index / gameState.cols;
 						JButton button = (JButton)e.getSource();
 						button.setEnabled(false);
-						doMove(row, col, getHumainPlayer());
+						doMove(row, col, getHumainPlayer());						
 						buttonPlay.setEnabled(true);
 					}
 				});
@@ -272,9 +272,11 @@ public class Board extends JFrame implements ActionListener{
 			}
 		}
 		GameStateFile.updateFile(gameState.getState());
-		gomokuBoard.updateUI();
+		gameState.initEmptyBoard();		
 		buttonPlay.setEnabled(true);
 		buttonAutomatic.setEnabled(true);
+		moveCount = 0;
+		gomokuBoard.updateUI();
 	}
 	
 	private void setLabelValues(int row, int col, long t, int count){

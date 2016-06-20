@@ -39,7 +39,7 @@ public class GameState {
 		}
 	}
 	
-	private void initEmptyBoard(){
+	public void initEmptyBoard(){
 		state = new int[BOARD_SIZE][BOARD_SIZE];
 		weight = new int[BOARD_SIZE][BOARD_SIZE];
 		nextPlayer = NO_PLAYER;
@@ -226,7 +226,7 @@ public class GameState {
 	public void set(int row, int col, int player){
 		state[row][col] = player;
 		setMoveRow(row);
-		setMoveCol(col);	
+		setMoveCol(col);
 	}
 	
 	public GameState getStateAfterMove(int row, int col, int player){
