@@ -4,8 +4,9 @@ import java.awt.EventQueue;
 
 public class Gomoku implements Runnable{
 	public static int WINING_SIZE = 5;
-	public static int player = 2;
-	public static boolean humain = false;
+	public static int player = 1;
+	public static int MAX_DEPTH = 1;
+	public static boolean humain = true;
 	//public String directory[] = new String[] {"C:\\\\IFI", ""};
     public static void main (String[] args){    	
 //    	if (args.length > 0) {

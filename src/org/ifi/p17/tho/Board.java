@@ -32,7 +32,6 @@ public class Board extends JFrame implements ActionListener{
 	private static Color X_COLOR = Color.blue;
 	private static Color Y_COLOR = Color.red;
 	private static Color[] COLORS = new Color[] {Color.black, X_COLOR, Y_COLOR, Color.green};
-	private static int DEPTH = 1;
 	private static String LABEL_MOVE_POSITION = "Last move: ";
 	private static String LABEL_MOVE_TIME = "Time: ";
 	private static String LABEL_MOVE_COUNT = "Move count: ";
@@ -290,19 +289,20 @@ public class Board extends JFrame implements ActionListener{
     	//labelNofity.setText("I'm thinking");
     	
 		//aiPlayer.setGameState(gameState);
-		MoveValue albe = aiPlayer.maxValue(gameState, alpha, beta, DEPTH, aiPlayer.getId());
+		//MoveValue albe = aiPlayer.maxValue(gameState, alpha, beta, DEPTH, aiPlayer.getId());
+    	Cell move = aiPlayer.getBestMove();
 		//Cell c = aiPlayer.getBestMove(gameState, alpha, beta, DEPTH, aiPlayer.getId());
 		long t1 = System.currentTimeMillis();
 		if(moveCount == 0){
 			adjustPlayer();
 		}
 		
-		if(albe.isValidMove() && gameState.getWinner() == GameState.NO_PLAYER){
-    		doMove(albe.getRow(), albe.getCol());
+		if(isValidMove(move.getY(), move.getX()) && gameState.getWinner() == GameState.NO_PLAYER){
+    		doMove(move.getY(), move.getX());
     		//labelNofity.setText("Do move in " + (t1 - t0) + "ms at: " + albe[1] + ", " + albe[2] + "with score = " + albe[0]);
     		//System.out.println("Do move in " + (t1 - t0) + "ms at: " + albe[1] + ", " + albe[2] + "with score = " + albe[0]);    		
     		moveCount++;
-    		setLabelValues(albe.getRow(), albe.getCol(), t1 - t0, moveCount);
+    		setLabelValues(move.getY(), move.getX(), t1 - t0, moveCount);
 		}else{
 			//labelDebug.setText("Do invalid move in " + (t1 - t0) + "ms at: " + albe[1] + ", " + albe[2] + "with score = " + albe[0]);
 		}
@@ -365,15 +365,15 @@ System.out.println("Invalid game state file");
 				    	//labelNofity.setText("I'm thinking");
 				    	
 						//aiPlayer.setGameState(gameState);
-						MoveValue albe = aiPlayer.getBestMove(gameState, alpha, beta, DEPTH, aiPlayer.getId());
+						Cell move = aiPlayer.getBestMove();
 						//Cell c = aiPlayer.getBestMove(gameState, alpha, beta, DEPTH, aiPlayer.getId());
 						long t1 = System.currentTimeMillis();
-						if(albe.getRow() >= 0){
-				    		doMove(albe.getRow(), albe.getCol());
+						if(isValidMove(move.getY(), move.getX())){
+				    		doMove(move.getY(), move.getX());
 				    		//labelNofity.setText("Do move in " + (t1 - t0) + "ms at: " + albe[1] + ", " + albe[2] + "with score = " + albe[0]);
 				    		//System.out.println("Do move in " + (t1 - t0) + "ms at: " + albe[1] + ", " + albe[2] + "with score = " + albe[0]);				    		
 				    		moveCount++;
-				    		setLabelValues(albe.getRow(), albe.getCol(), t1 - t0, moveCount);
+				    		setLabelValues(move.getY(), move.getX(), t1 - t0, moveCount);
 						}else{
 							//labelDebug.setText("Do invalid move in " + (t1 - t0) + "ms at: " + albe[1] + ", " + albe[2] + "with score = " + albe[0]);
 						}						
@@ -458,4 +458,11 @@ System.out.println("Invalid game state file");
 			aiPlayer.setId(GameState.O_PLAYER);
 		}
 	}
+	
+	public boolean isValidMove(int row, int col){
+		if(row < 0 || col < 0 || row > GameState.BOARD_SIZE - 1 || col > GameState.BOARD_SIZE -1){
+			return false;
+		}
+		return true;
+	}		
 }
