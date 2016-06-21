@@ -55,18 +55,18 @@ public class AIPlayer extends Player {
 			}
 		}
 		List<Cell> nextMoves = generateMoves(gs);
-		System.out.println(gs.toString());
+		//System.out.println(gs.toString());
 		for (Cell move : nextMoves) {
 			GameState newGs = new GameState(gs);
 			//System.out.println(newGs.getNextPlayer());
 			//X move
 			newGs.set(move.getY(), move.getX(), newGs.O_PLAYER);
 			//System.out.println(newGs.toString());
-			int value = min(newGs, alpha, beta, depth - 1);
+			int value = min(newGs, alpha, beta, depth - 1); //* newGs.getWeight(move.getY(), move.getX());
 			deb[move.getY()][move.getX()] = value;
 			if (depth == Gomoku.MAX_DEPTH) {				
 				System.out.println("move: " + move.getY() + "," + move.getX() + "," + "vl:" + value);
-				
+				System.out.println(newGs.toString());
 			}
 
 //System.out.println(value + "," + alpha);
@@ -74,7 +74,7 @@ public class AIPlayer extends Player {
 				alpha = value;
 				if (getId() == gameState.O_PLAYER && depth == Gomoku.MAX_DEPTH) {
 					bestMove = move;
-					System.out.println("alpha:" + alpha);
+					//System.out.println("alpha:" + alpha);
 				}
 			}
 
@@ -96,6 +96,9 @@ public class AIPlayer extends Player {
 
 	private int min(GameState gs, int alpha, int beta, int depth) {
 		if (depth == 0) {
+			//System.out.println("eval:"+ gs.evaluate());
+			//System.out.println(gs.toString());
+			
 			return gs.evaluate();
 		}
 
@@ -103,7 +106,7 @@ public class AIPlayer extends Player {
 		for (Cell move : nextMoves) {
 			GameState newGs = new GameState(gs);
 			newGs.set(move.getY(), move.getX(), newGs.X_PLAYER);						
-			int value = max(newGs, alpha, beta, depth - 1);
+			int value = max(newGs, alpha, beta, depth - 1);// * newGs.getWeight(move.getY(), move.getX());
 			
 			if (value < beta) {
 				beta = value;

@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.ifi.p17.tho.data.Cell;
 import org.ifi.p17.tho.io.GameStateFile;
 
+
 public class GameState {
 	private int state[][];
 	private int weight[][];
@@ -16,7 +17,8 @@ public class GameState {
 	public static int X_PLAYER = 2;
 	public static int O_PLAYER = 1;
 	
-	private static int[] SCORES = {0, 1, 10, 100, 1000, 10000};
+	private static int[] SCORES = {0, 10, 50, 1000, 50000, 1000000};
+	private static int[] SCORES1 = {0, 0, 9, 49, 999, 1000000};
 	
 	public int cols = BOARD_SIZE;
 	public int rows = BOARD_SIZE;
@@ -45,11 +47,14 @@ public class GameState {
 		state = new int[BOARD_SIZE][BOARD_SIZE];
 		weight = new int[BOARD_SIZE][BOARD_SIZE];
 		nextPlayer = NO_PLAYER;
-		for(int row = 0; row < rows/2; row++){
+		for(int row = 0; row < rows; row++){
 			for(int col = 0; col < cols; col++){
 				int z = Math.min(row, col);
-				weight[row][col] = z + 1;
-				weight[rows - row - 1][col] = z + 1;
+				if(z < 3 || z > BOARD_SIZE - 4){
+					weight[row][col] = 9;
+				}else{
+					weight[row][col]= 10;
+				}
 			}
 		}
 	}
@@ -209,25 +214,36 @@ public class GameState {
 		//p player sequence		
 
 		int col = startCol;
-		int row = startRow;
-		int offset = 0;
+		int row = startRow;		
 		
-		while(isInsideBoard(row, col)){
-			List<Integer> seq = new ArrayList<Integer>();
+		while(isInsideBoard(row, col)){			
+			int firstRowIndex = 0;
+			int firstColIndex = 0;
+			int count = 0;
 			while(isInsideBoard(row, col) && at(row, col) == player){
-				seq.add(offset);
-				offset++;
+				if(count == 0){
+					firstRowIndex = row;
+					firstColIndex = col;					
+				}
+				count++;
 				row += deltaRow;
 				col += deltaCol;
-			}
-			
-			if(seq.size() > 0){				
-				int firstRowIndex = startRow + seq.get(0) * deltaRow;
-				int firstColIndex = startCol + seq.get(0) * deltaCol;
-				
-				int lastRowIndex = startRow + seq.get(seq.size() - 1) * deltaRow;
-				int lastColIndex = startCol + seq.get(seq.size() - 1) * deltaCol;
-				
+			}			
+			if(count > 0){
+				if(count == Gomoku.WINING_SIZE){
+					value += score(count, 0);
+				}
+				int lastRowIndex = firstRowIndex + (count - 1) * deltaRow;
+				int lastColIndex = firstColIndex + (count - 1) * deltaCol;
+//				System.out.println("=====================");
+//				System.out.println("count:" + count);
+//				System.out.println("fr:" + firstRowIndex);
+//				System.out.println("fc:" + firstColIndex);
+//				System.out.println("dr:" + deltaRow);
+//				System.out.println("dc:" + deltaCol);
+//				System.out.println("lr:" + lastRowIndex);
+//				System.out.println("lc:" + lastColIndex);
+//				System.out.println("=====================");
 				//two ways close seq
 				/*
 				if( (lastRowIndex - startRow < Gomoku.WINING_SIZE && 
@@ -239,7 +255,7 @@ public class GameState {
 					continue;
 				}
 				*/
-				int nbCheck = Gomoku.WINING_SIZE - seq.size() + 1;
+				int nbCheck = Gomoku.WINING_SIZE - count + 1;
 				
 				int leftOpenCount = 0;
 				int rightOpenCount = 0;
@@ -247,54 +263,56 @@ public class GameState {
 				
 				//if( isInsideBoard(lastRowIndex + deltaRow, lastColIndex + deltaCol) &&
 				//at(lastRowIndex + deltaRow, lastColIndex + deltaCol) == NO_PLAYER ){
-				for(int i = 0; i < nbCheck; i++){
+				for(int i = 1; i < nbCheck + 1; i++){
 					int ri = lastRowIndex + i*deltaRow;
 					int ci = lastColIndex + i*deltaCol;
-					if( !isInsideBoard(ri, ci)){
+					if( !isInsideBoard(ri, ci) || at(ri, ci) != NO_PLAYER){
 						break;
-					}
-					if(at (ri, ci) == NO_PLAYER){
-						leftOpenCount++;
-					}else{
-						break;
-					}
+					}					
+					rightOpenCount++;
 				}
 				//}
 
-				for(int i = 0; i < nbCheck; i++){
-					int ri = firstRowIndex + i*deltaRow;
-					int ci = firstColIndex + i*deltaCol;
-					if( !isInsideBoard(ri, ci)){
+				for(int i = 1; i < nbCheck + 1; i++){
+					int ri = firstRowIndex - i*deltaRow;
+					int ci = firstColIndex - i*deltaCol;
+//					System.out.println("=====================");					
+//					System.out.println("fr:" + firstRowIndex);
+//					System.out.println("fc:" + firstColIndex);
+//					System.out.println("dr:" + deltaRow);
+//					System.out.println("dc:" + deltaCol);
+//					System.out.println("lr:" + ri);
+//					System.out.println("lc:" + ci);
+//					//System.out.println(toString());
+//					System.out.println("=====================");					
+					if( !isInsideBoard(ri, ci) || at(ri, ci) != NO_PLAYER){
 						break;
-					}
-					if(at (ri, ci) == NO_PLAYER){
-						rightOpenCount++;
-					}else{
-						break;
-					}
+					}					
+					leftOpenCount++;
 				}
-
+				
 				if( leftOpenCount > 0){
-					openHeads++;
+					openHeads++;					
 				}
 				
 				if( rightOpenCount > 0){
-					openHeads++;
-				}
+					openHeads++;				
+				}								
 				
 				int openCount = leftOpenCount + rightOpenCount;
 				
+				//System.out.println(openHeads);
 				if(openHeads == 2){
 					//two open head but !! there are only one possibility
-					if(openCount + seq.size() == Gomoku.WINING_SIZE){
-						value += score(seq.size(), 1);
-					}else if(openCount + seq.size() > Gomoku.WINING_SIZE){
-						value += score(seq.size(), openHeads);
+					if(openCount + count == Gomoku.WINING_SIZE){
+						value += score(count, 1);
+					}else if(openCount + count > Gomoku.WINING_SIZE){
+						value += score(count, openHeads);
 					}else {//no possibility of winning
-						value += score(seq.size(), 0);
+						value += score(count, 0);
 					}
 				}else{
-					value += score(seq.size(), openHeads);
+					value += score(count, openHeads);
 				}
 				
 			}
@@ -368,7 +386,7 @@ public class GameState {
 			return SCORES[numberOfPiece];
 		}
 		if(open == 1){
-			return SCORES[numberOfPiece - 1]/10;
+			return SCORES1[numberOfPiece];
 		}
 		return 0;
 	}
