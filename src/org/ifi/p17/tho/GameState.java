@@ -16,9 +16,9 @@ public class GameState {
 	public static int DRAW = 3;
 	public static int X_PLAYER = 2;
 	public static int O_PLAYER = 1;
-	
-	private static int[] SCORES = {0, 10, 50, 1000, 50000, 1000000};
-	private static int[] SCORES1 = {0, 0, 9, 49, 999, 1000000};
+	//								0	1		 2		3	4		5
+	private static int[] SCORES =  {0, 10, 		 100, 1000, 5000, 100000};
+	private static int[] SCORES1 = {0,  0,  9,   99, 1000, 100000};
 	
 	public int cols = BOARD_SIZE;
 	public int rows = BOARD_SIZE;
