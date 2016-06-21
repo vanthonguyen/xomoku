@@ -2,6 +2,7 @@ package org.ifi.p17.tho;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.ifi.p17.tho.data.Cell;
 import org.ifi.p17.tho.data.MoveValue;
@@ -15,6 +16,8 @@ public class AIPlayer extends Player {
 	
 	int bestRow = -1;
 	int bestCol = -1;
+	private static int aiMoveCount = 0;
+	
 	private Cell bestMove = new Cell(-1, -1);
 
 	public AIPlayer(int id) {
@@ -32,16 +35,27 @@ public class AIPlayer extends Player {
 		// ---------------------------------------------------------");
 		// logger.debug("Initiale state:");
 		// logger.debug("\n" + board.toString());
-		int vl;
-		if (getId() == gameState.O_PLAYER) {
-			vl = max(gameState, Integer.MIN_VALUE, Integer.MAX_VALUE, Gomoku.MAX_DEPTH);
-		} else {
-			vl = min(gameState, Integer.MIN_VALUE, Integer.MAX_VALUE, Gomoku.MAX_DEPTH);
+		if(gameState.getMoveCount() == 0){
+			return firstMove(gameState);
 		}
+		int vl;
+		int depth = gameState.getMoveCount() < 10 ? Gomoku.MAX_DEPTH : Gomoku.MAX_DEPTH;
+		if (getId() == gameState.O_PLAYER) {
+			vl = max(gameState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+		} else {
+			vl = min(gameState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+		}
+		
 		System.out.println(bestMove.toString() + "value:" + vl);
 		return bestMove;
 	}
 
+	private Cell firstMove(GameState gs){
+		List<Cell> nextMoves = generateMoves(gs);
+		int rndMove = (int)(Math.random() * (nextMoves.size() + 1));
+		return nextMoves.get(rndMove);
+	}
+	
 	private int max(GameState gs, int alpha, int beta, int depth) {
 		if (depth == 0) {
 			return gs.evaluate();
@@ -64,10 +78,10 @@ public class AIPlayer extends Player {
 			//System.out.println(newGs.toString());
 			int value = min(newGs, alpha, beta, depth - 1); //* newGs.getWeight(move.getY(), move.getX());
 			deb[move.getY()][move.getX()] = value;
-			if (depth == Gomoku.MAX_DEPTH) {				
-				System.out.println("move: " + move.getY() + "," + move.getX() + "," + "vl:" + value);
-				System.out.println(newGs.toString());
-			}
+//			if (depth == Gomoku.MAX_DEPTH) {				
+//				System.out.println("move: " + move.getY() + "," + move.getX() + "," + "vl:" + value);
+//				System.out.println(newGs.toString());
+//			}
 
 //System.out.println(value + "," + alpha);
 			if (value > alpha) {

@@ -28,6 +28,7 @@ public class GameState {
 	public boolean first = false;
 	public int winner = 0;
 	private int nextPlayer;
+	private int moveCount;
 	
 	public GameState(){
 		initEmptyBoard();
@@ -47,6 +48,7 @@ public class GameState {
 		state = new int[BOARD_SIZE][BOARD_SIZE];
 		weight = new int[BOARD_SIZE][BOARD_SIZE];
 		nextPlayer = NO_PLAYER;
+		moveCount = 0;
 		for(int row = 0; row < rows; row++){
 			for(int col = 0; col < cols; col++){
 				int z = Math.min(row, col);
@@ -56,7 +58,7 @@ public class GameState {
 					weight[row][col]= 10;
 				}
 			}
-		}
+		}		
 	}
 	
 	public boolean endGame(int row, int col) {
@@ -423,6 +425,7 @@ public class GameState {
 		state[row][col] = player;
 		setMoveRow(row);
 		setMoveCol(col);
+		moveCount++;
 	}
 	
 	public GameState getStateAfterMove(int row, int col, int player){
@@ -473,6 +476,14 @@ public class GameState {
 
 	public List<Cell> getWinningSequence() {
 		return seq;
+	}
+
+	public int getMoveCount() {
+		return moveCount;
+	}
+
+	public void setMoveCount(int moveCount) {
+		this.moveCount = moveCount;
 	}
 
 	

@@ -114,25 +114,12 @@ public class Board extends JFrame implements ActionListener{
 			square.setBorder(BorderFactory.createLineBorder(Color.black));
 			gomokuBoard.add(square);
 			square.setActionCommand(String.valueOf(i));
-			square.setBackground(new Color(235, 237, 243));
+			square.setBackground(new Color(255, 255, 255));
 			if(Gomoku.humain){
-				square.addActionListener(new ActionListener() {					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub						
-						long t0 = System.currentTimeMillis();
-						String command = e.getActionCommand();
-						int index = Integer.parseInt(command);
-						int col = index % gameState.cols;
-						int row = index / gameState.cols;
-						JButton button = (JButton)e.getSource();
-						button.setEnabled(false);
-						doMove(row, col, getHumainPlayer());						
-						buttonPlay.setEnabled(true);
-					}
-				});
+				square.addActionListener(this);					
 			}
 		}
+		
 		//JPanel panelButton = new JPanel();
 		buttonAutomatic = new JButton(LABEL_AUTOMATIC);
 		buttonPlay = new JButton(LABEL_PLAY);
@@ -181,7 +168,9 @@ public class Board extends JFrame implements ActionListener{
 					setO(row, col);
 				}
 			}
-		}
+		}		
+		JButton panel = (JButton) gomokuBoard.getComponent(gameState.getMoveRow() * GameState.BOARD_SIZE + gameState.getMoveCol());
+		panel.setBackground(new Color(180, 180, 180));
 		gomokuBoard.updateUI();
 	}
 
@@ -225,6 +214,11 @@ public class Board extends JFrame implements ActionListener{
 //		panel.removeAll();
 //		panel.add(x);
 		panel.setText("X");
+	    for( ActionListener al : panel.getActionListeners() ) {
+	    	panel.removeActionListener(al);	        
+	    }
+	    panel.setSelected(true);
+	    panel.setBackground(new Color(255, 255, 255));
 		//gomokuBoard.updateUI();
 	}
 	public void setO(int row, int col) {
@@ -233,7 +227,12 @@ public class Board extends JFrame implements ActionListener{
 		panel.setForeground(COLORS[gameState.at(row, col)]);
 		panel.setFont(new Font(panel.getFont().getName(), Font.BOLD, 16));		
 		panel.setText("O");
+		//panel.setEnabled(false);
+	    for( ActionListener al : panel.getActionListeners() ) {
+	    	panel.removeActionListener(al);	        
+	    }	    
 		//gomokuBoard.updateUI();
+	    panel.setBackground(new Color(255, 255, 255));
 	}
 
 	public GameState getBoardState() {
@@ -255,8 +254,21 @@ public class Board extends JFrame implements ActionListener{
         	automaticButtonPressed();
         }else if(LABEL_NEWGAME.equals(command)){
         	newGameButtonPressed();
+        }else{
+        	int index = Integer.parseInt(command);
+        	cellPressed(index);
         }
         
+	}
+	private void cellPressed(int cIndex){
+		long t0 = System.currentTimeMillis();		
+		
+		int col = cIndex % gameState.cols;
+		int row = cIndex / gameState.cols;
+		//JButton button = (JButton)e.getSource();
+		//button.setEnabled(false);
+		doMove(row, col, getHumainPlayer());						
+		buttonPlay.setEnabled(true);		
 	}
 	
 	private void newGameButtonPressed(){
@@ -268,6 +280,9 @@ public class Board extends JFrame implements ActionListener{
 				//panel.setFont(new Font(panel.getFont().getName(), Font.BOLD, 16));		
 				panel.setText("");
 				gameState.set(row, col, GameState.NO_PLAYER);
+				if(Gomoku.humain && panel.getActionListeners().length == 0){
+					panel.addActionListener(this);					
+				}
 			}
 		}
 		GameStateFile.updateFile(gameState.getState());
@@ -275,6 +290,7 @@ public class Board extends JFrame implements ActionListener{
 		buttonPlay.setEnabled(true);
 		buttonAutomatic.setEnabled(true);
 		moveCount = 0;
+		updateBoard();		
 		gomokuBoard.updateUI();
 	}
 	

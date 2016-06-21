@@ -24,7 +24,7 @@ public class Gomoku implements Runnable{
     	        System.err.println("Argument" + " must be an integer");
     	        System.exit(1);
     	    }
-    	}    	
+    	}
         EventQueue.invokeLater(new Gomoku());
     }
 
