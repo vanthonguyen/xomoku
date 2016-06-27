@@ -216,7 +216,7 @@ public class GameState {
 		//p player sequence		
 
 		int col = startCol;
-		int row = startRow;		
+		int row = startRow;
 		
 		while(isInsideBoard(row, col)){			
 			int firstRowIndex = 0;
@@ -234,6 +234,7 @@ public class GameState {
 			if(count > 0){
 				if(count == Gomoku.WINING_SIZE){
 					value += score(count, 0);
+					continue;
 				}
 				int lastRowIndex = firstRowIndex + (count - 1) * deltaRow;
 				int lastColIndex = firstColIndex + (count - 1) * deltaCol;
@@ -306,9 +307,10 @@ public class GameState {
 				//System.out.println(openHeads);
 				if(openHeads == 2){
 					//two open head but !! there are only one possibility
-					if(openCount + count == Gomoku.WINING_SIZE){
-						value += score(count, 1);
-					}else if(openCount + count > Gomoku.WINING_SIZE){
+					//if(openCount + count == Gomoku.WINING_SIZE){
+					//	value += score(count, 1);
+					//}else 
+					if(openCount + count >= Gomoku.WINING_SIZE){
 						value += score(count, openHeads);
 					}else {//no possibility of winning
 						value += score(count, 0);
